@@ -12,5 +12,5 @@ func buzz() {
 
 func main() {
 	buzz()
-	fmt.Println("Hello world!")
+	fmt.Println("Hello world!", "TEST TEST")
 }
