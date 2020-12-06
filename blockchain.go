@@ -1,12 +1,9 @@
 package main
 
 import (
-	"crypto/sha256"
-	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
-	"time"
 )
 
 const (
@@ -14,55 +11,6 @@ const (
 	MINING_SENDER     = "THE BLOCKCHAIN" // MINING_SENDER is an address of sending reward.
 	MINING_REWARD     = 1.0              // MINING_REWARD is a reward for mining.
 )
-
-// Block is a struct of Block.
-type Block struct {
-	nonce        int
-	previousHash [32]byte
-	timestamp    int64
-	transactions []*Transaction
-}
-
-// NewBlock is a function to create a new block.
-func NewBlock(nonce int, previousHash [32]byte, transactions []*Transaction) *Block {
-	b := new(Block)
-	b.timestamp = time.Now().UnixNano()
-	b.nonce = nonce
-	b.previousHash = previousHash
-	b.transactions = transactions
-	return b
-}
-
-// Hash is a function to hash a block.
-func (b *Block) Hash() [32]byte {
-	m, _ := json.Marshal(b)
-	return sha256.Sum256(m)
-}
-
-// MarshalJSON is an override of default function to marshal block properly.
-func (b *Block) MarshalJSON() ([]byte, error) {
-	return json.Marshal(struct {
-		Nonce        int            `json:"nonce"`
-		PreviousHash [32]byte       `json:"previous_hash"`
-		Timestamp    int64          `json:"timestamp"`
-		Transactions []*Transaction `json:"transactions"`
-	}{
-		Nonce:        b.nonce,
-		PreviousHash: b.previousHash,
-		Timestamp:    b.timestamp,
-		Transactions: b.transactions,
-	})
-}
-
-// Print is a helper function to print Block in pretty format.
-func (b *Block) Print() {
-	fmt.Printf("timestamp:        %d\n", b.timestamp)
-	fmt.Printf("nonce:            %d\n", b.nonce)
-	fmt.Printf("previous_hash:    %x\n", b.previousHash)
-	for _, t := range b.transactions {
-		t.Print()
-	}
-}
 
 // Blockchain is a struct for Blockchain.
 type Blockchain struct {
@@ -147,6 +95,7 @@ func (bc *Blockchain) Mining() bool {
 	return true
 }
 
+// CalculateTotalAmount is a function to calculate total amount.
 func (bc *Blockchain) CalculateTotalAmount(blockchainAddress string) float32 {
 	var totalAmount float32 = 0.0
 	for _, b := range bc.chain {
@@ -161,61 +110,4 @@ func (bc *Blockchain) CalculateTotalAmount(blockchainAddress string) float32 {
 		}
 	}
 	return totalAmount
-}
-
-// Transaction is a struct for transaction.
-type Transaction struct {
-	senderBlockchainAddress    string
-	recipientBlockchainAddress string
-	value                      float32
-}
-
-// NewTransaction is a function to create a new transaction.
-func NewTransaction(sender string, recipient string, value float32) *Transaction {
-	return &Transaction{sender, recipient, value}
-}
-
-// Print is a helper function to print transaction in pretty format.
-func (t *Transaction) Print() {
-	fmt.Printf("%s\n", strings.Repeat("-", 40))
-	fmt.Printf("  sender_blockchain_address     %s\n", t.senderBlockchainAddress)
-	fmt.Printf("  recipient_blockchain_address  %s\n", t.recipientBlockchainAddress)
-	fmt.Printf("  value                         %.1f\n", t.value)
-}
-
-// MarshalJSON is an override of default function to marshal transaction properly.
-func (t *Transaction) MarshalJSON() ([]byte, error) {
-	return json.Marshal(struct {
-		Sender    string  `json:"sender_blockchain_address"`
-		Recipient string  `json:"recipient_blockchain_address"`
-		Value     float32 `json:"value"`
-	}{
-		Sender:    t.senderBlockchainAddress,
-		Recipient: t.recipientBlockchainAddress,
-		Value:     t.value,
-	})
-}
-
-func init() {
-	log.SetPrefix("Blockchain: ")
-}
-
-func main() {
-	myBlockchainAddress := "my_blockchain_address"
-
-	blockchain := NewBlockchain(myBlockchainAddress)
-	blockchain.Print()
-
-	blockchain.AddTransaction("A", "B", 1.0)
-	blockchain.Mining()
-	blockchain.Print()
-
-	blockchain.AddTransaction("C", "D", 2.0)
-	blockchain.AddTransaction("X", "Y", 3.0)
-	blockchain.Mining()
-	blockchain.Print()
-
-	fmt.Printf("my %.1f\n", blockchain.CalculateTotalAmount("my_blockchain_address"))
-	fmt.Printf("C %.1f\n", blockchain.CalculateTotalAmount("C"))
-	fmt.Printf("D %.1f\n", blockchain.CalculateTotalAmount("D"))
 }
