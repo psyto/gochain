@@ -1,9 +1,14 @@
 package block
 
 import (
+	"crypto/ecdsa"
+	"crypto/sha256"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
+
+	"github.com/gochain/utils"
 )
 
 const (
@@ -56,9 +61,37 @@ func (bc *Blockchain) LastBlock() *Block {
 }
 
 // AddTransaction is a function to add a transaction to transaction pool.
-func (bc *Blockchain) AddTransaction(sender string, recipient string, value float32) {
+func (bc *Blockchain) AddTransaction(sender string, recipient string, value float32,
+	senderPublicKey *ecdsa.PublicKey, s *utils.Signature) bool {
 	t := NewTransaction(sender, recipient, value)
-	bc.transactionPool = append(bc.transactionPool, t)
+
+	if sender == MINING_SENDER {
+		bc.transactionPool = append(bc.transactionPool, t)
+		return true
+	}
+
+	if bc.VerifyTransactionSignature(senderPublicKey, s, t) {
+		/*
+			if bc.CalculateTotalAmount(sender) < value {
+				log.Println("ERROR: Not enough balance in a wallet")
+				return false
+			}
+		*/
+		bc.transactionPool = append(bc.transactionPool, t)
+		return true
+	}
+
+	log.Println("ERROR: Verify Transaction")
+	return false
+
+}
+
+// VerifyTransactionSignature is a function to verify transaction signature.
+func (bc *Blockchain) VerifyTransactionSignature(
+	senderPublicKey *ecdsa.PublicKey, s *utils.Signature, t *Transaction) bool {
+	m, _ := json.Marshal(t)
+	h := sha256.Sum256([]byte(m))
+	return ecdsa.Verify(senderPublicKey, h[:], s.R, s.S)
 }
 
 // CopyTransactionPool is a function to copy transaction pool.
@@ -92,7 +125,7 @@ func (bc *Blockchain) ProofOfWork() int {
 
 // Mining is a function to mine a block.
 func (bc *Blockchain) Mining() bool {
-	bc.AddTransaction(MINING_SENDER, bc.blockchainAddress, MINING_REWARD)
+	bc.AddTransaction(MINING_SENDER, bc.blockchainAddress, MINING_REWARD, nil, nil)
 	nonce := bc.ProofOfWork()
 	previousHash := bc.LastBlock().Hash()
 	bc.CreateBlock(nonce, previousHash)
