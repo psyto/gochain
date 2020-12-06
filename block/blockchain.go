@@ -7,9 +7,14 @@ import (
 )
 
 const (
-	MINING_DIFFICULTY = 3                // MINING_DIFFICUTY is a difficulty of mining.
-	MINING_SENDER     = "THE BLOCKCHAIN" // MINING_SENDER is an address of sending reward.
-	MINING_REWARD     = 1.0              // MINING_REWARD is a reward for mining.
+	// MINING_DIFFICULTY is a difficulty of mining.
+	MINING_DIFFICULTY = 3
+
+	// MINING_SENDER is an address of sending reward.
+	MINING_SENDER = "THE BLOCKCHAIN"
+
+	// MINING_REWARD is a reward for mining.
+	MINING_REWARD = 1.0
 )
 
 // Blockchain is a struct for Blockchain.
