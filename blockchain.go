@@ -11,12 +11,12 @@ import (
 
 type Block struct {
 	nonce        int
-	previousHash string
+	previousHash [32]byte
 	timestamp    int64
 	transactions []string
 }
 
-func NewBlock(nonce int, previousHash string) *Block {
+func NewBlock(nonce int, previousHash [32]byte) *Block {
 	b := new(Block)
 	b.timestamp = time.Now().UnixNano()
 	b.nonce = nonce
@@ -32,10 +32,10 @@ func (b *Block) Hash() [32]byte {
 
 func (b *Block) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
-		Nonce        int
-		PreviousHash string
-		Timestamp    int64
-		Transactions []string
+		Nonce        int      `json:"nonce"`
+		PreviousHash [32]byte `json:"previous_hash"`
+		Timestamp    int64    `json:timestamp"`
+		Transactions []string `json:transactions`
 	}{
 		Nonce:        b.nonce,
 		PreviousHash: b.previousHash,
@@ -50,8 +50,9 @@ type Blockchain struct {
 }
 
 func NewBlockchain() *Blockchain {
+	b := &Block{}
 	bc := new(Blockchain)
-	bc.CreateBlock(0, "init hash")
+	bc.CreateBlock(0, b.Hash())
 	return bc
 }
 
@@ -63,16 +64,20 @@ func (bc *Blockchain) Print() {
 	fmt.Printf("%s\n", strings.Repeat("*", 25))
 }
 
-func (bc *Blockchain) CreateBlock(nonce int, previousHash string) *Block {
+func (bc *Blockchain) CreateBlock(nonce int, previousHash [32]byte) *Block {
 	b := NewBlock(nonce, previousHash)
 	bc.chain = append(bc.chain, b)
 	return b
 }
 
+func (bc *Blockchain) LastBlock() *Block {
+	return bc.chain[len(bc.chain)-1]
+}
+
 func (b *Block) Print() {
 	fmt.Printf("timestamp:        %d\n", b.timestamp)
 	fmt.Printf("nonce:            %d\n", b.nonce)
-	fmt.Printf("previous hash:    %s\n", b.previousHash)
+	fmt.Printf("previous_hash:    %x\n", b.previousHash)
 	fmt.Printf("transactions:     %s\n", b.transactions)
 }
 
@@ -81,15 +86,14 @@ func init() {
 }
 
 func main() {
-	block := &Block{nonce: 1}
-	fmt.Printf("%x\n", block.Hash())
+	blockchain := NewBlockchain()
+	blockchain.Print()
 
-	/*
-		blockchain := NewBlockchain()
-		blockchain.Print()
-		blockchain.CreateBlock(1, "hash 1")
-		blockchain.Print()
-		blockchain.CreateBlock(2, "hash 2")
-		blockchain.Print()
-	*/
+	previousHash := blockchain.LastBlock().Hash()
+	blockchain.CreateBlock(1, previousHash)
+	blockchain.Print()
+
+	previousHash = blockchain.LastBlock().Hash()
+	blockchain.CreateBlock(2, previousHash)
+	blockchain.Print()
 }
