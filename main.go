@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+
+	"github.com/gochain/block"
 )
 
 func init() {
@@ -12,7 +14,7 @@ func init() {
 func main() {
 	myBlockchainAddress := "my_blockchain_address"
 
-	blockchain := NewBlockchain(myBlockchainAddress)
+	blockchain := block.NewBlockchain(myBlockchainAddress)
 	blockchain.Print()
 
 	blockchain.AddTransaction("A", "B", 1.0)
