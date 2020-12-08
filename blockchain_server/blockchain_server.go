@@ -5,7 +5,11 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/gochain/block"
 )
+
+var cache map[string]*block.Blockchain = make(map[string]*block.Blockchain)
 
 // BlockchainServer consists of port number.
 type BlockchainServer struct {
