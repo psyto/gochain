@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	log.SetPrefix("Wallet server: ")
+	log.SetPrefix("Wallet Server: ")
 }
 
 func main() {

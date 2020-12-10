@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-const tempDir = "wallet_server/templates"
+const tempDir = "templates"
 
 // WalletServer is a struct type for a wallet server.
 type WalletServer struct {
