@@ -78,7 +78,7 @@ func (w *Wallet) PrivateKey() *ecdsa.PrivateKey {
 
 // PrivateKeyStr is a function to return the string representation of privateKey.
 func (w *Wallet) PrivateKeyStr() string {
-	return fmt.Sprintf("%x", w.privateKey.D.Bytes())
+	return fmt.Sprintf("%064x", w.privateKey.D.Bytes())
 }
 
 // PublicKey is a function to get publicKey.
@@ -88,7 +88,7 @@ func (w *Wallet) PublicKey() *ecdsa.PublicKey {
 
 // PublicKeyStr is a function to return the string representation of privateKey.
 func (w *Wallet) PublicKeyStr() string {
-	return fmt.Sprintf("%x%x", w.publicKey.X.Bytes(), w.publicKey.Y.Bytes())
+	return fmt.Sprintf("%064x%064x", w.publicKey.X.Bytes(), w.publicKey.Y.Bytes())
 }
 
 // BlockchainAddress is a function to get blockchainAddress.
