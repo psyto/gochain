@@ -79,15 +79,17 @@ func (ws *WalletServer) CreateTransaction(w http.ResponseWriter, req *http.Reque
 			return
 		}
 
-		publicKey := utils.PublicKeyFromString(*t.SenderPublicKey)
-		privateKey := utils.PrivateKeyFromString(*t.SenderPrivateKey, publicKey)
-		value, err := strconv.ParseFloat(*t.Value, 32)
-		if err != nil {
-			log.Println("ERROR: parse error")
-			io.WriteString(w, string(utils.JSONStatus("fail")))
-			return
-		}
-		value32 := float32(value)
+		/*
+			publicKey := utils.PublicKeyFromString(*t.SenderPublicKey)
+			privateKey := utils.PrivateKeyFromString(*t.SenderPrivateKey, publicKey)
+			value, err := strconv.ParseFloat(*t.Value, 32)
+			if err != nil {
+				log.Println("ERROR: parse error")
+				io.WriteString(w, string(utils.JSONStatus("fail")))
+				return
+			}
+			value32 := float32(value)
+		*/
 
 		w.Header().Add("Content-type", "application/json")
 
